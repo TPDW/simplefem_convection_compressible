@@ -30,7 +30,6 @@ elemental_to_nodal.o\
 solve_uzawa_MUMPS.o\
 equation_of_state.o\
 simplefem_thermal_streamlined.o 
-#simplefem_aspect.o
 
 .f.o:
 	$(F90) $(FLAGS) $(INCLUDE) $*.f
