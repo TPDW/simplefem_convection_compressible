@@ -287,7 +287,7 @@ viscosity=Di/Ra
 
 courant_nb=0.5
 
-nstep=2500
+nstep=5000
 !nstep=500
 
 output_freq=10
@@ -375,6 +375,7 @@ open(unit=1005,file='OUT/dt.dat')
 open(unit=1006,file='OUT/conv_Nu.dat')
 open(unit=1007,file='OUT/conv_vrms.dat')
 open(unit=1008,file='OUT/energies.dat',status='replace')
+open(unit=1009,file='OUT/temp.dat',status='replace')
 
 open(unit=2000,file='OUT/times.dat',status='replace')
 open(unit=1066,file='OUT/temp_eq.dat')
@@ -1426,6 +1427,7 @@ end do
 end do
 
 write(1004,*) time,Nu ; call flush(1004)
+write(1009,*) time,sum(T)/np ; call flush(1009)
 
 
 vsurf=0.d0

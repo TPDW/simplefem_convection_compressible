@@ -1,4 +1,4 @@
-#this plots the comparisons of the final temeperature view
+#this plots the comparisons of the final temperature view
 #over the different approximations and parameters
 
 
@@ -17,15 +17,6 @@ Di_list = [0.25,0.5,1.0]
 
 approximation_dict = {1:"ALA",2:"TALA",3:"BA",4:"EBA"}
 
-#iterate over the allowed combinations of values
-#find a good way of storing the arrays
-#maybe a multidimensional array?
-#that could work, might be a bit weird though
-#how else could I do it?
-#should I care that much about how I do it?
-#yes, I want this to be extendable to other sets of values
-#and to figure out this problem for it's own sake
-#and for the sake of learning
 
 list_of_arrays = []
 
