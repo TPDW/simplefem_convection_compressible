@@ -84,6 +84,7 @@ real(8) Aref                                   !
 real(8) hcapa                                  ! heat capacity
 real(8) hcond                                  ! heat conductivity
 real(8) alpha                                  ! thermal expansion 
+real(8) gamma                                  ! Gruneissen Parameter
 real(8) time                                   ! real time
 real(8) dt                                     ! timestep
 real(8) courant_nb                             ! Courant number for CFL criterion
@@ -249,8 +250,9 @@ use_eos = .true.
 !==============================================!
 
 chi_T=1.d-1
- T0=1.d0
+T0=1.d0
 
+gamma = 1 
 
 Lx=1.d0
 Ly=1.d0
@@ -308,11 +310,14 @@ end if
 Ra = -alpha*gy*T0*hcapa*lx**3*rho0**2 / (hcond*viscosity)
 Di = -alpha*gy*Lx / hcapa
 
+chi_T = (alpha + alpha**2*T0*gamma)/(rho0*hcapa*gamma)
+
 write(*,*) "Ra = ", Ra, "Di = ", Di
 write(*,*) "Lx = ", Lx, "gy = ", gy
 write(*,*) "Rho0 = ",Rho0, "T0 = ",T0
 write(*,*) "Hcapa = ", hcapa, "Hcond = ", hcond
 write(*,*) "alpha = ",alpha, "viscosity = ", viscosity
+write(*,*) "chi_T = ",chi_T
 
 vr = hcond/(rho0*hcapa*Lx)
 er = viscosity*(hcond/(rho0*hcapa*Lx**2))**2*Lx**3
@@ -1092,10 +1097,10 @@ end do
 !===============================================!
 
 phi_nodal=0.d0
-if (.false.) then
+if (compressible) then !theoretically should be if compressible, but explodes for reasons unknown
 do i=1,np
-   phi_nodal(i) =                4.d0/3.d0*viscosity*dxu_nodal(i)**2 - 2.d0/3.d0*dxu_nodal(i)*dyv_nodal(i)
-   phi_nodal(i) = phi_nodal(i) + 4.d0/3.d0*viscosity*dyv_nodal(i)**2 - 2.d0/3.d0*dxu_nodal(i)*dyv_nodal(i)
+   phi_nodal(i) =                4.d0/3.d0*viscosity*dxu_nodal(i)**2 - 2.d0/3.d0*dxu_nodal(i)*dyv_nodal(i)*viscosity
+   phi_nodal(i) = phi_nodal(i) + 4.d0/3.d0*viscosity*dyv_nodal(i)**2 - 2.d0/3.d0*dxu_nodal(i)*dyv_nodal(i)*viscosity
    phi_nodal(i) = phi_nodal(i) + viscosity*(dyu_nodal(i) + dxv_nodal(i))**2
 end do
 else
@@ -1238,7 +1243,7 @@ do iel=1,nel
 
       BmatTT=transpose(BmatT)
 
-      if (BA) then
+      if (BA) then 
         Kb=0.d0
       else
         Kb=-matmul(NvectT,Nvect)*wq*jcob*alpha*gy*v_el*rho2
@@ -1254,7 +1259,10 @@ do iel=1,nel
 
       AelT=AelT+(M_T+KK*theta*dt)
 
-      BelT=BelT+matmul(M_T-KK*(1.d0-theta)*dt,temp(1:4)) + F*dt - matmul(Kc,temp_ref(1:4))*dt
+      BelT=BelT+matmul(M_T-KK*(1.d0-theta)*dt,temp(1:4)) + F*dt 
+      if (ALA .or. TALA) then 
+        Belt = Belt - matmul(Kc,temp_ref(1:4))*dt !Represents convection of reference temp
+      end if
 
    end do
    end do
