@@ -280,7 +280,6 @@ gx=0
 
 
 call get_command_argument(4,arg)
-!write(*,*) arg
 read(arg,'(f4.2)') Di
 write(*,*) "Di = ", Di
 gy=-10
@@ -290,7 +289,6 @@ viscosity=Di/Ra
 courant_nb=0.5
 
 nstep=5000
-!nstep=500
 
 output_freq=10
 
@@ -328,15 +326,15 @@ er = viscosity*(hcond/(rho0*hcapa*Lx**2))**2*Lx**3
 
 time=0.d0
 
-nel=nelx*nely ! total number of elements
+nel=nelx*nely  ! total number of elements
 
-np=nnx*nny ! total number of nodes
+np=nnx*nny     ! total number of nodes
 
 NfemV=np*ndofV ! size of Stokes matrix
 NfemT=np*ndofT ! size of temperature matrix
 
-hx=Lx/(nnx-1) ! grid spacing in x direction
-hy=Ly/(nny-1) ! grid spacing in y direction
+hx=Lx/(nnx-1)  ! grid spacing in x direction
+hy=Ly/(nny-1)  ! grid spacing in y direction
 
 !==============================================!
 if(compressible) then
@@ -348,24 +346,6 @@ Cmat(1,1)=2.d0 ; Cmat(1,2)=0.d0 ; Cmat(1,3)=0.d0
 Cmat(2,1)=0.d0 ; Cmat(2,2)=2.d0 ; Cmat(2,3)=0.d0  
 Cmat(3,1)=0.d0 ; Cmat(3,2)=0.d0 ; Cmat(3,3)=1.d0
 end if 
-!==============================================!
-
-! print *,'Lx=',Lx
-! print *,'Ly=',Ly
-! print *,'hx=',hx
-! print *,'hy=',hy
-! print *,'nelx',nelx
-! print *,'nely',nely
-! print *,'nel',nel
-! print *,'nnx',nnx
-! print *,'nny',nny
-! print *,'np',np
-! print *,'gx=',gx
-! print *,'gy=',gy
-! print *,'NfemV=',NfemV
-! print *,'NfemT=',NfemT
-! print *,'courant_nb=',courant_nb
-! print *,'Ra=',Ra
 
 !==============================================!
 !===[open files]===============================!
@@ -608,7 +588,6 @@ do i=1,np
    endif
    if (y(i).gt.(Ly-eps) ) then 
       bc_fixT(i)=.true. ; bc_valT(i)=0.d0
-      !write(*,*) "temp boundary set ", i
    endif
 end do
 
@@ -620,7 +599,6 @@ do i=1,nel
    do k=1,m
       if(y(icon(k,i)) .gt. (Ly-eps)) then
          bc_fixP(i)=.true. ; bc_valP = 0.d0
-         !write(*,*) "Pressure boundary set ", i
       end if 
    end do 
 end do 
@@ -638,9 +616,10 @@ end do
 !==============================================!
 
 do i=1,nel
-   press_el(i) = rho0*gy*(Lx-y(icon(1,i))+hx/2.d0)
-   !this is a bit of a hack
+   press_el(i) = rho0*gy*(Lx-y(icon(1,i))+hx/2.d0) 
    !hydrostatic pressure to initialise
+   !On the offchance anyone ever upgrades this to other geometries
+   !Note that this does not generalise, and would need updating
 end do
 
 
@@ -1097,7 +1076,7 @@ end do
 !===============================================!
 
 phi_nodal=0.d0
-if (compressible) then !theoretically should be if compressible, but explodes for reasons unknown
+if (compressible) then 
 do i=1,np
    phi_nodal(i) =                4.d0/3.d0*viscosity*dxu_nodal(i)**2 - 2.d0/3.d0*dxu_nodal(i)*dyv_nodal(i)*viscosity
    phi_nodal(i) = phi_nodal(i) + 4.d0/3.d0*viscosity*dyv_nodal(i)**2 - 2.d0/3.d0*dxu_nodal(i)*dyv_nodal(i)*viscosity
@@ -1318,9 +1297,9 @@ do iel=1,nel
     end do
     end if
 
-end do ! end of loop over cells
+end do ! end of loop over cells for building temp matrices
 
-!Before solving system, but after construction martrices
+!Before solving system, but after constructing matrices
 !Store old temperature 
 
 T_prev = T
