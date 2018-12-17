@@ -185,6 +185,11 @@ read(arg, '(i1)') MUMPS_VP_int
 MUMPS_T = MUMPS_T_int
 MUMPS_VP = MUMPS_VP_int
 
+if (MUMPS_VP) then
+  write(*,*) "MUMPS velocity solver does not work"
+  stop
+end if
+
 
 !==============================================!
                                                !
